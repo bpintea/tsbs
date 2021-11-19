@@ -31,6 +31,7 @@ runners: tsbs_run_queries_akumuli \
 		 tsbs_run_queries_cassandra \
 		 tsbs_run_queries_clickhouse \
 		 tsbs_run_queries_cratedb \
+		 tsbs_run_queries_elasticsearch \
 		 tsbs_run_queries_influx \
 		 tsbs_run_queries_mongo \
 		 tsbs_run_queries_siridb \
