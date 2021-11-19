@@ -10,7 +10,9 @@ import (
 type Elasticsearch struct {
 	HumanLabel       []byte
 	HumanDescription []byte
-	Query            []byte
+	SqlQuery         []byte
+	DslQuery         []byte
+	Index            []byte
 	id               uint64
 }
 
@@ -29,6 +31,8 @@ var ElasticsearchPool = sync.Pool{
 func (es *Elasticsearch) Release() {
 	es.HumanLabel = es.HumanLabel[:0]
 	es.HumanDescription = es.HumanDescription[:0]
+	es.SqlQuery = es.SqlQuery[:0]
+	es.DslQuery = es.DslQuery[:0]
 	es.id = 0
 
 	ElasticsearchPool.Put(es)
@@ -56,7 +60,8 @@ func (es *Elasticsearch) SetID(n uint64) {
 
 // String produces a debug-ready description of a Query.
 func (es *Elasticsearch) String() string {
-	return fmt.Sprintf("HumanLabel: \"%s\", HumanDescription: \"%s\", Query: \"%s\"", es.HumanLabel, es.HumanDescription, es.Query)
+	return fmt.Sprintf("HumanLabel: \"%s\", HumanDescription: \"%s\", SqlQuery: \"%s\", DslQuery: \"%s\", Index: \"%s\"",
+		es.HumanLabel, es.HumanDescription, es.SqlQuery, es.DslQuery, es.Index)
 }
 
 func NewElasticsearch() *Elasticsearch {

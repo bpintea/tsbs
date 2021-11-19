@@ -46,7 +46,7 @@ func (q *Timestream) SetID(n uint64) {
 // String produces a debug-ready description of a Query.
 func (q *Timestream) String() string {
 	return fmt.Sprintf(
-		"HumanLabel: %s, HumanDescription: %s, Table: %s, Query: %s",
+		"HumanLabel: %s, HumanDescription: %s, Table: %s, SqlQuery: %s",
 		q.HumanLabel, q.HumanDescription, q.Table, q.SqlQuery,
 	)
 }
