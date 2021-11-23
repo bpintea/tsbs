@@ -10,21 +10,21 @@ import (
 	"time"
 )
 
-// Devops produces QuestDB-specific queries for all the devops query types.
+// Devops produces Elasticsearch-specific queries for all the devops query types.
 type Devops struct {
 	*BaseGenerator
 	*devops.Core
 }
 
 const (
-	EsName = "Elasticsearch"
+	EsName      = "Elasticsearch"
 	TargetIndex = "cpu"
 )
 
 var (
-	maxCpuHistoTmpl *template.Template
-	groupByTimeAndPrimaryTagTmpl *template.Template
-	highCPUForHostsNoHostFilterTmpl *template.Template
+	maxCpuHistoTmpl                   *template.Template
+	groupByTimeAndPrimaryTagTmpl      *template.Template
+	highCPUForHostsNoHostFilterTmpl   *template.Template
 	highCPUForHostsWithHostFilterTmpl *template.Template
 )
 
@@ -58,6 +58,7 @@ func init() {
 }
 
 type IntervalType int
+
 const (
 	IntervalMinute IntervalType = iota
 	IntervalHour
@@ -76,7 +77,7 @@ const (
 func (d *Devops) GroupByTime(qi query.Query, nHosts, numMetrics int, duration time.Duration) {
 	fields, err := devops.GetCPUMetricsSlice(numMetrics)
 	panicIfErr(err)
-	humanLabel := fmt.Sprintf(EsName+ " %d cpu metric(s), random %4d hosts, random %s by 1m", numMetrics, nHosts, duration)
+	humanLabel := fmt.Sprintf(EsName+" %d cpu metric(s), random %4d hosts, random %s by 1m", numMetrics, nHosts, duration)
 	d.generateMaxCpuHistoQuery(qi, fields, IntervalMinute, nHosts, duration, humanLabel)
 }
 
@@ -191,7 +192,7 @@ func (d *Devops) HighCPUForHosts(qi query.Query, nHosts int) {
 		TargetIndex,
 		window.StartUnixMillis(), window.EndUnixMillis())
 
-	if (len(hosts) > 0) {
+	if len(hosts) > 0 {
 		sql += fmt.Sprintf(" AND hostname IN ('%s')", strings.Join(hosts, "', '"))
 	}
 
@@ -217,7 +218,6 @@ func (d *Devops) HighCPUForHosts(qi query.Query, nHosts int) {
 	panicIfErr(err)
 	fillInQuery(qi, humanLabel, humanDesc(humanLabel, window), sql, dsl)
 }
-
 
 // TODO: Remove the need for this by continuing to bubble up errors
 func panicIfErr(err error) {
@@ -307,7 +307,7 @@ func FieldsAsAggs(agg string, fields []string) string {
 	for _, field := range fields {
 		out += fmt.Sprintf(`"%[1]s_agg":{"%[2]s":{"field":"%[1]s"}},`, field, agg)
 	}
-	return out[:len(out) - 1]
+	return out[:len(out)-1]
 }
 
 func ToQuotedList(elems []string) string {
@@ -315,15 +315,15 @@ func ToQuotedList(elems []string) string {
 	for _, elem := range elems {
 		out += "\"" + elem + "\","
 	}
-	return out[:len(out) - 1]
+	return out[:len(out)-1]
 }
 
 type MaxCpuHistoParams struct {
-	Hostnames []string
-	From int64
-	To int64
+	Hostnames   []string
+	From        int64
+	To          int64
 	HistoMillis int
-	Fields []string
+	Fields      []string
 }
 
 const maxCpuHistoTemplate = `
@@ -379,8 +379,8 @@ const maxCpuHistoTemplate = `
 }`
 
 type GroupByTimeAndPrimaryTagParams struct {
-	From int64
-	To int64
+	From   int64
+	To     int64
 	Fields []string
 }
 
@@ -478,8 +478,8 @@ const groupByOrderByLimitFormat = `
 }`
 
 type HighCPUForHostsParams struct {
-	From int64
-	To int64
+	From      int64
+	To        int64
 	Hostnames []string
 }
 

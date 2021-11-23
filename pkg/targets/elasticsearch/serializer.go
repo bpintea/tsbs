@@ -28,42 +28,27 @@ func (s *Serializer) Serialize(p *data.Point, w io.Writer) (err error) {
 	buf = append(buf, ", \"@timestamp\": "...)
 	buf = serialize.FastFormatAppend(p.Timestamp().UTC().UnixMilli(), buf)
 
-	fakeTags := make([]int, 0)
 	tagKeys := p.TagKeys()
 	tagValues := p.TagValues()
 	for i := 0; i < len(tagKeys); i++ {
 		if tagValues[i] == nil {
 			continue
 		}
-		switch v := tagValues[i].(type) {
-		case string:
-			buf = append(buf, ',', ' ', '"')
-			buf = append(buf, tagKeys[i]...)
-			buf = append(buf, '"', ':', ' ', '"')
-			buf = append(buf, []byte(v)...)
-			buf = append(buf, '"')
-		default:
-			fakeTags = append(fakeTags, i)
-		}
+
+		buf = append(buf, ',', ' ', '"')
+		buf = append(buf, tagKeys[i]...)
+		buf = append(buf, '"', ':', ' ', '"')
+		buf = serialize.FastFormatAppend(tagValues[i], buf)
+		buf = append(buf, '"')
 	}
+
 	fieldKeys := p.FieldKeys()
-	if len(fakeTags) > 0 || len(fieldKeys) > 0 {
-		buf = append(buf, ' ')
-	}
-
-	for i := 0; i < len(fakeTags); i++ {
-		tagIndex := fakeTags[i]
-
-		buf = appendField(buf, tagKeys[tagIndex], tagValues[tagIndex])
-	}
-
 	fieldValues := p.FieldValues()
 	for i := 0; i < len(fieldKeys); i++ {
 		value := fieldValues[i]
 		if value == nil {
 			continue
 		}
-
 		buf = appendField(buf, fieldKeys[i], value)
 	}
 
